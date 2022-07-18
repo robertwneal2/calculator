@@ -2,7 +2,11 @@ body {
     display: flex;
     justify-content: center;
     margin: 50px;
-    padding: 0px;
+    padding: 0px;ont
+}
+
+div {
+    font-family: Arial, Helvetica, sans-serif;
 }
 
 .calculator {
