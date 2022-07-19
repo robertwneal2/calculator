@@ -58,7 +58,6 @@ function pressClearButton() {
 }
 
 function pressNumButton() {
-    debugger
     newVal = this.textContent
     if (numInput == null || numInput == '0') {
         numInput = ''
@@ -75,6 +74,10 @@ function pressDeleteButton() {
     currentTextLength = currentText.length
     newText = currentText.substr(0,currentTextLength-1)
     newText = newText === '' ? '0' : newText
+    eIndex = newText.indexOf('e')
+    if (eIndex == (newText.length-1)) { //remove 'e' if last character
+        newText = newText.substring(0, newText.length-1)
+    }
     numInput = newText
     display.textContent = newText
 }
@@ -181,12 +184,8 @@ function shortenNumStr(num) {
             num = parseFloat(num)
             num = num/(10**(tens))
             num = Math.round(num).toString()
-            num = num + "E" + tens.toString()
+            num = num + "e" + tens.toString()
         }  
-    }
-    dotIndex = num.indexOf('.')
-    if (dotIndex == (num.length-1)) {
-        num = num.substring(0, num.length-1)
     }
     return num
 }
