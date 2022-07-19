@@ -74,9 +74,9 @@ function pressDeleteButton() {
     currentTextLength = currentText.length
     newText = currentText.substr(0,currentTextLength-1)
     newText = newText === '' ? '0' : newText
-    eIndex = newText.indexOf('e')
+    eIndex = newText.indexOf('+')
     if (eIndex == (newText.length-1)) { //remove 'e' if last character
-        newText = newText.substring(0, newText.length-1)
+        newText = newText.substring(0, newText.length-2)
     }
     numInput = newText
     display.textContent = newText
@@ -148,10 +148,10 @@ function setHistory(equals = '') {
     if (num2 == null) {
         numStr = ''
     } else {
-        numStr = ` ${num2}`
+        numStr = `${num2}`
     }
     hist = document.querySelector('.display-history')
-    currentHistory = `${shortenNumStr(num1)} ${currentOperatorSymbol}${shortenNumStr(numStr)}${equals}`
+    currentHistory = `${shortenNumStr(num1)} ${currentOperatorSymbol} ${shortenNumStr(numStr)}${equals}`
     hist.textContent = currentHistory //.substring(0,25)
 }
 
@@ -170,6 +170,29 @@ function shortenNumStr(num) {
     if (num === '0.') {
         return num
     }
+    if (num.includes('e+')) {
+        eIndex = num.indexOf('e+')
+        preENum = num.substring(0, eIndex)
+        eNum = num.substring(eIndex+2, num.length)
+        let i = 0
+        let zeros = ''
+        for (;i < eNum; i++) {
+            if (preENum.includes('.')) {
+                dotIndex = preENum.indexOf('.')
+                if (dotIndex == (preENum.length-1)) {
+                    preENum = preENum.substring(0,preENum.length-1) + '0'
+                } else {
+                    preDotNum = preENum.substring(0, dotIndex)
+                    postDotNum = preENum.substring(dotIndex+1, preENum.length)
+                    numMove = postDotNum.substring(0,1)
+                    preENum = preDotNum + numMove + '.' + postDotNum.substring(1,postDotNum.length)
+                }
+            } else {
+                zeros += '0'
+            }
+        }
+        num = preENum + zeros
+    }
     while (num.length > maxLength) {
         if (num.includes('.')) {
             dotIndex = num.indexOf('.')
@@ -179,12 +202,12 @@ function shortenNumStr(num) {
                 num = num.substring(0, num.length-1)
             }
         } else {
-            tens = (num.length - maxLength) + 1
+            tens = (num.length - maxLength) + 2
             tens += tens.toString().length
             num = parseFloat(num)
             num = num/(10**(tens))
             num = Math.round(num).toString()
-            num = num + "e" + tens.toString()
+            num = num + "e+" + tens.toString()
         }  
     }
     return num
