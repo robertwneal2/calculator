@@ -25,6 +25,9 @@ operatorButtons.forEach((operator) => {
 equalsButton = document.querySelector('.equals')
 equalsButton.addEventListener('click', pressEqualsButton)
 
+decimalButton = document.querySelector('.decimal')
+decimalButton.addEventListener('click', pressDecimalButton)
+
 function operate(operator, num1, num2) {
     return operator(num1, num2)
 }
@@ -54,13 +57,13 @@ function pressClearButton() {
 }
 
 function pressNumButton() {
+    debugger
     newVal = this.textContent
-    if (numInput == null) {
+    if (numInput == null || numInput == '0') {
         numInput = ''
     }
     numInput = numInput + newVal
     valToDisplay(numInput)
-    numInput = parseInt(numInput.substring(0,11))
 }
 
 function pressDeleteButton() {
@@ -68,14 +71,14 @@ function pressDeleteButton() {
     currentText = display.textContent
     currentTextLength = currentText.length
     newText = currentText.substr(0,currentTextLength-1)
-    newText = newText === '' ? null : parseInt(newText)
+    newText = newText === '' ? '0' : newText
     numInput = newText
     display.textContent = newText
 }
 
 function pressOperatorButton() {
     if (numInput == null && num1 == null) { //operator pressed at beginning
-        num1 = 0 
+        num1 = '0' 
     } else if (num1 == null) {  //first num input
         num1 = numInput
     } else if (numInput != null) { //second num input
@@ -98,13 +101,21 @@ function pressEqualsButton() {
     }
 }
 
+function pressDecimalButton() {
+    numInput = numInput == null ? '0' : numInput
+    if (!numInput.includes('.')) {
+        numInput = (numInput + '.')
+        valToDisplay(numInput)
+    }
+}
+
 function valToDisplay(val) {
     display = document.querySelector('.display-text')
-    display.textContent = val.toString().substring(0,11)
+    display.textContent = val.toString().substring(0,10)
 }
 
 function calcResult() {
-    result = operate(currentOperator, num1, num2)
+    result = operate(currentOperator, parseFloat(num1), parseFloat(num2))
     valToDisplay(result)
     currentResult = result
     num1 = result
@@ -135,7 +146,7 @@ function setHistory(equals = '') {
     }
     hist = document.querySelector('.display-history')
     currentHistory = `${num1} ${currentOperatorSymbol}${numStr}${equals}`
-    hist.textContent = currentHistory.substring(0,30)
+    hist.textContent = currentHistory.substring(0,25)
 }
 
 function resetValues() {
