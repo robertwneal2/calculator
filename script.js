@@ -5,6 +5,7 @@ let currentResult = null
 let currentOperator = null
 let currentHistory = null
 let currentOperatorSymbol = null
+const maxLength = 11
 
 numButtons = document.querySelectorAll('.num');
 numButtons.forEach((button) => {
@@ -61,6 +62,8 @@ function pressNumButton() {
     newVal = this.textContent
     if (numInput == null || numInput == '0') {
         numInput = ''
+    } else if (numInput.length > (maxLength - 1)) {
+        return //cap input limit
     }
     numInput = numInput + newVal
     valToDisplay(numInput)
@@ -94,7 +97,7 @@ function pressOperatorButton() {
 }
 
 function pressEqualsButton() {
-    if (numInput != null) {
+    if (numInput != null && num1 != null) {
         num2 = numInput
         setHistory(" =")
         calcResult()
@@ -111,7 +114,7 @@ function pressDecimalButton() {
 
 function valToDisplay(val) {
     display = document.querySelector('.display-text')
-    display.textContent = val.toString().substring(0,10)
+    display.textContent = shortenNumStr(val)
 }
 
 function calcResult() {
@@ -145,8 +148,8 @@ function setHistory(equals = '') {
         numStr = ` ${num2}`
     }
     hist = document.querySelector('.display-history')
-    currentHistory = `${num1} ${currentOperatorSymbol}${numStr}${equals}`
-    hist.textContent = currentHistory.substring(0,25)
+    currentHistory = `${shortenNumStr(num1)} ${currentOperatorSymbol}${shortenNumStr(numStr)}${equals}`
+    hist.textContent = currentHistory //.substring(0,25)
 }
 
 function resetValues() {
@@ -158,3 +161,33 @@ function resetValues() {
     currentOperatorSymbol = null
     numInput = null
 }
+
+function shortenNumStr(num) {
+    num = num.toString()
+    if (num === '0.') {
+        return num
+    }
+    while (num.length > maxLength) {
+        if (num.includes('.')) {
+            dotIndex = num.indexOf('.')
+            if (dotIndex == (num.length-1)) {
+                num = num.substring(0,num.length-1)
+            } else {
+                num = num.substring(0, num.length-1)
+            }
+        } else {
+            tens = (num.length - maxLength) + 1
+            tens += tens.toString().length
+            num = parseFloat(num)
+            num = num/(10**(tens))
+            num = Math.round(num).toString()
+            num = num + "E" + tens.toString()
+        }  
+    }
+    dotIndex = num.indexOf('.')
+    if (dotIndex == (num.length-1)) {
+        num = num.substring(0, num.length-1)
+    }
+    return num
+}
+
